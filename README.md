@@ -47,7 +47,7 @@ Example: Install Oracle JDK 8
 
 ## License
 
-Copyright (C) 2014 Isuru Perera
+Copyright (C) 2014 M. Isuru Tharanga Chrishantha Perera
 
 Licensed under the Apache License, Version 2.0
 
