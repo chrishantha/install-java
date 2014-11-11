@@ -31,7 +31,7 @@ You need to provide the JDK distribution file (tar.gz) and the Java Installation
 
 ```
 Usage: 
-install_java.sh -f <java_dist> [-p] <java_dir>
+install-java.sh -f <java_dist> [-p] <java_dir>
 
 -f: The jdk tar.gz file
 -p: Java installation directory
@@ -39,11 +39,11 @@ install_java.sh -f <java_dist> [-p] <java_dir>
 
 Example: Install Oracle JDK 7
 
-`sudo ./install_java.sh -f ~/Software/jdk-7u72-linux-x64.tar.gz`
+`sudo ./install-java.sh -f ~/Software/jdk-7u72-linux-x64.tar.gz`
 
 Example: Install Oracle JDK 8
 
-`sudo ./install_java.sh -f ~/Software/jdk-8u25-linux-x64.tar.gz`
+`sudo ./install-java.sh -f ~/Software/jdk-8u25-linux-x64.tar.gz`
 
 ## License
 

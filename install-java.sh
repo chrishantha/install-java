@@ -12,7 +12,7 @@ java_dir="/usr/lib/jvm"
 function help {
     echo ""
     echo "Usage: "
-    echo "install_java.sh -f <java_dist> [-p] <java_dir>"
+    echo "install-java.sh -f <java_dist> [-p] <java_dir>"
     echo ""
     echo "-f: The jdk tar.gz file"
     echo "-p: Java installation directory"
