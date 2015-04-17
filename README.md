@@ -13,14 +13,14 @@ Only requirement is to have all required distributions in a single directory.
 
 For example, if you want to install Java 7, following files must be downloaded.
 
- - jdk-7u72-linux-x64.tar.gz
- - jdk-7u72-linux-x64-demos.tar.gz
+ - jdk-7u80-linux-x64.tar.gz
+ - jdk-7u80-linux-x64-demos.tar.gz
  - UnlimitedJCEPolicyJDK7.zip
 
 Similarly for Java 8, following are the files required
 
- - jdk-8u25-linux-x64.tar.gz
- - jdk-8u25-linux-x64-demos.tar.gz
+ - jdk-8u45-linux-x64.tar.gz
+ - jdk-8u45-linux-x64-demos.tar.gz
  - jce_policy-8.zip
 
 ## Installation
@@ -47,7 +47,7 @@ Example: Install Oracle JDK 8
 
 ## License
 
-Copyright (C) 2014 M. Isuru Tharanga Chrishantha Perera
+Copyright (C) 2014-2015 M. Isuru Tharanga Chrishantha Perera
 
 Licensed under the Apache License, Version 2.0
 
