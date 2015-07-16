@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 # ----------------------------------------------------------------------------
-# Script for removing the Java distribution
+# Script for uninstalling Java
 # ----------------------------------------------------------------------------
 
 set -e
@@ -24,7 +24,7 @@ java_dist_dir=""
 function help {
     echo ""
     echo "Usage: "
-    echo "remove-java.sh -p <java_dist_dir>"
+    echo "uninstall-java.sh -p <java_dist_dir>"
     echo ""
     echo "-p: Java distribution directory"
     echo ""
@@ -65,6 +65,7 @@ done
 
 if [[ ! -f $java_dist_dir/bin/java ]]; then
     echo "Please specify a valid java distribution directory"
+    help
     exit 1
 fi
 

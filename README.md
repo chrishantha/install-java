@@ -3,7 +3,7 @@ Oracle Java installation script for Linux
 
 "install-java.sh" is an installation script for setting up Oracle Java Development Kit on Linux.
 
-I'm mainly using Ubuntu and therefore this script is tested only on Ubuntu 14.04 64-bit version
+I'm mainly using Ubuntu and therefore this script is tested only on Ubuntu versions. I have tested this script on Ubuntu 14.04 and Ubuntu 15.04 versions.
 
 ## Prerequisites
 
@@ -19,8 +19,8 @@ For example, if you want to install Java 7, following files must be downloaded.
 
 Similarly for Java 8, following are the files required
 
- - jdk-8u45-linux-x64.tar.gz
- - jdk-8u45-linux-x64-demos.tar.gz
+ - jdk-8u51-linux-x64.tar.gz
+ - jdk-8u51-linux-x64-demos.tar.gz
  - jce_policy-8.zip
 
 ## Installation
@@ -39,11 +39,28 @@ install-java.sh -f <java_dist> [-p] <java_dir>
 
 Example: Install Oracle JDK 7
 
-`sudo ./install-java.sh -f ~/Software/jdk-7u72-linux-x64.tar.gz`
+`sudo ./install-java.sh -f ~/Software/jdk-7u80-linux-x64.tar.gz`
 
 Example: Install Oracle JDK 8
 
-`sudo ./install-java.sh -f ~/Software/jdk-8u25-linux-x64.tar.gz`
+`sudo ./install-java.sh -f ~/Software/jdk-8u51-linux-x64.tar.gz`
+
+## Uninstallation
+
+There is another script named "uninstall-java.sh" to uninstall Java. 
+
+You need to provide Java distribution directory.
+
+```
+Usage: 
+uninstall-java.sh -p <java_dist_dir>
+
+-p: Java distribution directory
+```
+
+Example: Uninstall Oracle JDK 7
+
+`sudo ./uninstall-java.sh -p /usr/lib/jvm/jdk1.7.0_80/`
 
 ## License
 
