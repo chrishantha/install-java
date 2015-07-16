@@ -20,7 +20,7 @@
 set -e
 
 java_dist=""
-java_dir="/usr/lib/jvm"
+java_dir=""
 
 function help {
     echo ""
@@ -52,7 +52,7 @@ if [ "$UID" -ne "0" ]; then
 fi
 
 
-while getopts ":f:p" opts
+while getopts "f:p:" opts
 do
   case $opts in
     f)
@@ -74,13 +74,17 @@ if [[ ! -f $java_dist ]]; then
     exit 1
 fi
 
+#If no directory was provided, we need to create the default one
+if [[ ! -d $java_dir ]]; then
+    java_dir="/usr/lib/jvm"
+    mkdir -p $java_dir
+fi
+
+#Validate java directory
 if [[ ! -d $java_dir ]]; then
     echo "Please specify a valid java installation directory"
     exit 1
 fi
-
-#If no directory was provided, we need to create the default one
-mkdir -p $java_dir
 
 # Extract Java Distribution
 
