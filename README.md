@@ -7,11 +7,15 @@ I'm mainly using Ubuntu and therefore this script is tested only on Ubuntu versi
 
 ## Prerequisites
 
-This script will not download Java distribution. You need to [download JDK] from Oracle. 
+The script uses "unzip" command. Therefore please make sure it is installed.
 
-Only requirement is to have all required distributions in a single directory.
+`sudo apt-get install unzip`
 
-For example, if you want to install Java 7, following files must be downloaded.
+The "install-java.sh" script will not download the Java distribution. You need to [download JDK] from Oracle.
+
+It is required to have all Java distributions in a single directory.
+
+For example, if you want to install Java 7, following files should be downloaded and moved to a single directory.
 
  - jdk-7u80-linux-x64.tar.gz
  - jdk-7u80-linux-x64-demos.tar.gz
@@ -22,6 +26,8 @@ Similarly for Java 8, following are the files required
  - jdk-8u51-linux-x64.tar.gz
  - jdk-8u51-linux-x64-demos.tar.gz
  - jce_policy-8.zip
+
+The Java Demos and Java Cryptography Extension (JCE) Unlimited Strength Jurisdiction Policy files are optional.
 
 ## Installation
 
