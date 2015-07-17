@@ -71,7 +71,7 @@ fi
 
 # Run update-alternatives commands
 
-commands=( "jar" "java" "javac" "javadoc" "javah" "javap" "javaws" "jcmd" "jconsole" "jarsigner" "jhat" "jinfo" "jmap" "jmc" "jps" "jstack" "jstat" "jstatd" "keytool" "policytool" "wsgen" "wsimport" )
+commands=( "jar" "java" "javac" "javadoc" "javah" "javap" "javaws" "jcmd" "jconsole" "jarsigner" "jhat" "jinfo" "jmap" "jmc" "jps" "jstack" "jstat" "jstatd" "jvisualvm" "keytool" "policytool" "wsgen" "wsimport" )
 
 if (confirm "Run update-alternatives commands?"); then
 	echo "Running update-alternatives --remove for ${commands[@]} mozilla-javaplugin.so"
