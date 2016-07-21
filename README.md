@@ -3,7 +3,7 @@ Oracle Java installation script for Linux
 
 "install-java.sh" is an installation script for setting up Oracle Java Development Kit on Linux.
 
-I'm mainly using Ubuntu and therefore this script is tested only on Ubuntu versions. I have tested this script on Ubuntu 14.04 and Ubuntu 15.04 versions.
+I'm mainly using Ubuntu and therefore this script is tested only on Ubuntu versions. I have tested this script on Ubuntu 14.04, Ubuntu 15.04 and Ubuntu 16.04 versions.
 
 ## Prerequisites
 
@@ -23,8 +23,8 @@ For example, if you want to install Java 7, following files should be downloaded
 
 Similarly for Java 8, following are the files required
 
- - jdk-8u51-linux-x64.tar.gz
- - jdk-8u51-linux-x64-demos.tar.gz
+ - jdk-8u102-linux-x64.tar.gz
+ - jdk-8u102-linux-x64-demos.tar.gz
  - jce_policy-8.zip
 
 The Java Demos and Java Cryptography Extension (JCE) Unlimited Strength Jurisdiction Policy files are optional.
@@ -49,7 +49,7 @@ Example: Install Oracle JDK 7
 
 Example: Install Oracle JDK 8
 
-`sudo ./install-java.sh -f ~/Software/jdk-8u51-linux-x64.tar.gz`
+`sudo ./install-java.sh -f ~/Software/jdk-8u102-linux-x64.tar.gz`
 
 ## Uninstallation
 
@@ -70,7 +70,7 @@ Example: Uninstall Oracle JDK 7
 
 ## License
 
-Copyright (C) 2014-2015 M. Isuru Tharanga Chrishantha Perera
+Copyright (C) 2014-2016 M. Isuru Tharanga Chrishantha Perera
 
 Licensed under the Apache License, Version 2.0
 

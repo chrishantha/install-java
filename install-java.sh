@@ -90,7 +90,7 @@ fi
 
 java_dist_filename=$(basename $java_dist)
 
-dirname=$(echo $java_dist_filename | sed 's/jdk-\([78]\)u\([0-9]\{2\}\)-linux.*/jdk1.\1.0_\2/')
+dirname=$(echo $java_dist_filename | sed 's/jdk-\([78]\)u\([0-9]\{2,3\}\)-linux.*/jdk1.\1.0_\2/')
 
 extracted_dirname=$java_dir"/"$dirname
 
@@ -110,7 +110,7 @@ fi
 
 # Install Demos
 
-demos_dist=$(dirname $java_dist)/$(echo $java_dist_filename | sed 's/jdk-\([78]u[0-9]\{2\}\)-linux-\(.*\).tar.gz/jdk-\1-linux-\2-demos.tar.gz/')
+demos_dist=$(dirname $java_dist)/$(echo $java_dist_filename | sed 's/jdk-\([78]u[0-9]\{2,3\}\)-linux-\(.*\).tar.gz/jdk-\1-linux-\2-demos.tar.gz/')
 
 if [[ -f $demos_dist && ! -d $extracted_dirname/demo ]]; then
     # No demo directory
