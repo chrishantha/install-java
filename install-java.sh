@@ -96,7 +96,7 @@ extracted_dirname=$java_dir"/"$dirname
 
 if [[ ! -d $extracted_dirname ]]; then
 	echo "Extracting $java_dist to $java_dir"
-	tar -xf $java_dist -C $java_dir
+	tar -xof $java_dist -C $java_dir
     echo "JDK is extracted to $extracted_dirname"
 else 
     echo "JDK is already extracted to $extracted_dirname"
@@ -146,7 +146,7 @@ if (confirm "Run update-alternatives commands?"); then
 
 	for i in "${commands[@]}"
 	do
-		sudo update-alternatives --install "/usr/bin/$i" "$i" "$extracted_dirname/bin/$i" 1
+		sudo update-alternatives --install "/usr/bin/$i" "$i" "$extracted_dirname/bin/$i" 10000
 	done
 
 	sudo update-alternatives --install "/usr/lib/mozilla/plugins/libjavaplugin.so" "mozilla-javaplugin.so" "$extracted_dirname/jre/lib/amd64/libnpjp2.so" 1
@@ -168,3 +168,14 @@ fi
 # if ( (! grep -q mozilla "$missioncontrol_config") && confirm "Change default browser in Java Mission Control to Mozilla?"); then
 #     echo org.eclipse.swt.browser.DefaultType=mozilla >> $missioncontrol_config
 # fi
+
+
+# Create system preferences directory
+java_system_prefs_dir="/etc/.java/.systemPrefs"
+if [[ ! -d $java_system_prefs_dir ]]; then
+    if (confirm "Create Java System Prefs Directory and change ownership to $SUDO_USER:$SUDO_USER?"); then
+        echo "Creating $java_system_prefs_dir"
+        mkdir -p $java_system_prefs_dir
+        chown -R $SUDO_USER:$SUDO_USER $java_system_prefs_dir
+    fi
+fi
