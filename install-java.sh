@@ -149,7 +149,7 @@ if (confirm "Run update-alternatives commands?"); then
 		sudo update-alternatives --install "/usr/bin/$i" "$i" "$extracted_dirname/bin/$i" 10000
 	done
 
-	sudo update-alternatives --install "/usr/lib/mozilla/plugins/libjavaplugin.so" "mozilla-javaplugin.so" "$extracted_dirname/jre/lib/amd64/libnpjp2.so" 1
+	sudo update-alternatives --install "/usr/lib/firefox-addons/plugins/libjavaplugin.so" "mozilla-javaplugin.so" "$extracted_dirname/jre/lib/amd64/libnpjp2.so" 1
 
 	echo "Running update-alternatives --config"
 
