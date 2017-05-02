@@ -47,8 +47,8 @@ confirm () {
 
 # Make sure the script is running as root.
 if [ "$UID" -ne "0" ]; then
-	echo "You must be root to run $0. Try following"; echo "sudo $0"; 
-	exit 9
+    echo "You must be root to run $0. Try following"; echo "sudo $0";
+    exit 9
 fi
 
 
@@ -95,8 +95,8 @@ dirname=$(echo $java_dist_filename | sed 's/jdk-\([78]\)u\([0-9]\{2,3\}\)-linux.
 extracted_dirname=$java_dir"/"$dirname
 
 if [[ ! -d $extracted_dirname ]]; then
-	echo "Extracting $java_dist to $java_dir"
-	tar -xof $java_dist -C $java_dir
+    echo "Extracting $java_dist to $java_dir"
+    tar -xof $java_dist -C $java_dir
     echo "JDK is extracted to $extracted_dirname"
 else 
     echo "JDK is already extracted to $extracted_dirname"
@@ -142,23 +142,18 @@ fi
 commands=( "jar" "java" "javac" "javadoc" "javah" "javap" "javaws" "jcmd" "jconsole" "jarsigner" "jhat" "jinfo" "jmap" "jmc" "jps" "jstack" "jstat" "jstatd" "jvisualvm" "keytool" "policytool" "wsgen" "wsimport" )
 
 if (confirm "Run update-alternatives commands?"); then
-	echo "Running update-alternatives --install for ${commands[@]} mozilla-javaplugin.so"
+    echo "Running update-alternatives --install and --config for ${commands[@]} mozilla-javaplugin.so"
 
-	for i in "${commands[@]}"
-	do
-		sudo update-alternatives --install "/usr/bin/$i" "$i" "$extracted_dirname/bin/$i" 10000
-	done
+    for i in "${commands[@]}"
+    do
+        sudo update-alternatives --install "/usr/bin/$i" "$i" "$extracted_dirname/bin/$i" 10000
+        sudo update-alternatives --config "$i"
+    done
 
-	sudo update-alternatives --install "/usr/lib/mozilla/plugins/libjavaplugin.so" "mozilla-javaplugin.so" "$extracted_dirname/jre/lib/amd64/libnpjp2.so" 1
-
-	echo "Running update-alternatives --config"
-
-	for i in "${commands[@]}"
-	do
-		sudo update-alternatives --config "$i"
-	done
-
-	sudo update-alternatives --config "mozilla-javaplugin.so"
+    if [[ -d "/usr/lib/mozilla/plugins/" ]]; then
+        sudo update-alternatives --install "/usr/lib/mozilla/plugins/libjavaplugin.so" "mozilla-javaplugin.so" "$extracted_dirname/jre/lib/amd64/libnpjp2.so" 10000
+        sudo update-alternatives --config "mozilla-javaplugin.so"
+    fi
 fi
 
 # Configure Java Mission Control
