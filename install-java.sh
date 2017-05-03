@@ -176,3 +176,11 @@ if [[ ! -d $java_system_prefs_dir ]]; then
         chown -R $SUDO_USER:$SUDO_USER $java_system_prefs_dir
     fi
 fi
+
+if (confirm "Do you want to set JAVA_HOME environment variable?"); then
+    if grep -q "export JAVA_HOME=.*" ~/.bashrc; then
+        sed -i "s|export JAVA_HOME=.*|export JAVA_HOME=$extracted_dirname|" ~/.bashrc
+    else
+        echo "export JAVA_HOME=$extracted_dirname" >>  ~/.bashrc
+    fi
+fi
