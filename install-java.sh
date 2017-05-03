@@ -17,8 +17,6 @@
 # Installation script for setting up Java on Linux
 # ----------------------------------------------------------------------------
 
-set -e
-
 java_dist=""
 java_dir=""
 

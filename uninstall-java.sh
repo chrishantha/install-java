@@ -17,8 +17,6 @@
 # Script for uninstalling Java
 # ----------------------------------------------------------------------------
 
-set -e
-
 java_dist_dir=""
 
 function help {
