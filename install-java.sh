@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright 2014-2015 M. Isuru Tharanga Chrishantha Perera
+# Copyright 2014 M. Isuru Tharanga Chrishantha Perera
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -146,13 +146,15 @@ if (confirm "Run update-alternatives commands?"); then
 
     for i in "${commands[@]}"
     do
-        sudo update-alternatives --install "/usr/bin/$i" "$i" "$extracted_dirname/bin/$i" 10000
-        sudo update-alternatives --config "$i"
+        command_path=$extracted_dirname/bin/$i
+        sudo update-alternatives --install "/usr/bin/$i" "$i" "$command_path" 10000
+        sudo update-alternatives --set "$i" "$command_path"
     done
 
     if [[ -d "/usr/lib/mozilla/plugins/" ]]; then
-        sudo update-alternatives --install "/usr/lib/mozilla/plugins/libjavaplugin.so" "mozilla-javaplugin.so" "$extracted_dirname/jre/lib/amd64/libnpjp2.so" 10000
-        sudo update-alternatives --config "mozilla-javaplugin.so"
+        lib_path=$extracted_dirname/jre/lib/amd64/libnpjp2.so
+        sudo update-alternatives --install "/usr/lib/mozilla/plugins/libjavaplugin.so" "mozilla-javaplugin.so" "$lib_path" 10000
+        sudo update-alternatives --set "mozilla-javaplugin.so" "$lib_path"
     fi
 fi
 
