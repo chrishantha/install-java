@@ -9,7 +9,7 @@ I'm mainly using Ubuntu and therefore this script is tested only on Ubuntu versi
 
 The script uses "unzip" command. Therefore please make sure it is installed.
 
-`sudo apt-get install unzip`
+`sudo apt install unzip`
 
 The "install-java.sh" script will not download the Java distribution. You need to [download JDK] from Oracle.
 
@@ -23,8 +23,8 @@ For example, if you want to install Java 7, following files should be downloaded
 
 Similarly for Java 8, following are the files required
 
- - jdk-8u102-linux-x64.tar.gz
- - jdk-8u102-linux-x64-demos.tar.gz
+ - jdk-8u131-linux-x64.tar.gz
+ - jdk-8u131-linux-x64.tar.gz
  - jce_policy-8.zip
 
 The Java Demos and Java Cryptography Extension (JCE) Unlimited Strength Jurisdiction Policy files are optional.
@@ -45,11 +45,19 @@ install-java.sh -f <java_dist> [-p] <java_dir>
 
 Example: Install Oracle JDK 7
 
-`sudo ./install-java.sh -f ~/Software/jdk-7u80-linux-x64.tar.gz`
+`sudo ./install-java.sh -f ~/software/java/jdk-7u80-linux-x64.tar.gz`
 
 Example: Install Oracle JDK 8
 
-`sudo ./install-java.sh -f ~/Software/jdk-8u102-linux-x64.tar.gz`
+`sudo ./install-java.sh -f ~/software/java/jdk-8u131-linux-x64.tar.gz`
+
+## Automate Java Installation
+
+You can automate the Java installation script by using the `yes` command.
+
+Example: Install Oracle JDK 8
+
+`yes | sudo ./install-java.sh -f ~/software/java/jdk-8u131-linux-x64.tar.gz`
 
 ## Uninstallation
 
@@ -70,7 +78,7 @@ Example: Uninstall Oracle JDK 7
 
 ## License
 
-Copyright (C) 2014-2016 M. Isuru Tharanga Chrishantha Perera
+Copyright (C) 2014 M. Isuru Tharanga Chrishantha Perera
 
 Licensed under the Apache License, Version 2.0
 
