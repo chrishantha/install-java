@@ -176,9 +176,27 @@ if [[ ! -d $java_system_prefs_dir ]]; then
 fi
 
 if (confirm "Do you want to set JAVA_HOME environment variable?"); then
-    if grep -q "export JAVA_HOME=.*" ~/.bashrc; then
-        sed -i "s|export JAVA_HOME=.*|export JAVA_HOME=$extracted_dirname|" ~/.bashrc
+    if grep -q "export JAVA_HOME=.*" $HOME/.bashrc; then
+        sed -i "s|export JAVA_HOME=.*|export JAVA_HOME=$extracted_dirname|" $HOME/.bashrc
     else
-        echo "export JAVA_HOME=$extracted_dirname" >>  ~/.bashrc
+        echo "export JAVA_HOME=$extracted_dirname" >>  $HOME/.bashrc
     fi
+fi
+
+create_jmc_shortcut() {
+shortcut_file="$HOME/.local/share/applications/jmc.desktop"
+cat << _EOF_ > $shortcut_file
+[Desktop Entry]
+Name=Oracle Java Mission Control
+Comment=Oracle Java Mission Control
+Type=Application
+Exec=$extracted_dirname/bin/jmc
+Icon=$extracted_dirname/lib/missioncontrol/icon.xpm
+Terminal=false
+_EOF_
+chmod +x $shortcut_file
+}
+
+if (confirm "Do you want to create a desktop shortcut to JMC?"); then
+    create_jmc_shortcut
 fi
