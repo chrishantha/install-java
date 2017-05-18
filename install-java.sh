@@ -179,8 +179,9 @@ if (confirm "Do you want to set JAVA_HOME environment variable?"); then
     if grep -q "export JAVA_HOME=.*" $HOME/.bashrc; then
         sed -i "s|export JAVA_HOME=.*|export JAVA_HOME=$extracted_dirname|" $HOME/.bashrc
     else
-        echo "export JAVA_HOME=$extracted_dirname" >>  $HOME/.bashrc
+        echo "export JAVA_HOME=$extracted_dirname" >> $HOME/.bashrc
     fi
+    source $HOME/.bashrc
 fi
 
 create_jmc_shortcut() {
