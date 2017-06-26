@@ -184,8 +184,10 @@ if (confirm "Do you want to set JAVA_HOME environment variable?"); then
     source $HOME/.bashrc
 fi
 
+applications_dir="$HOME/.local/share/applications"
+
 create_jmc_shortcut() {
-shortcut_file="$HOME/.local/share/applications/jmc.desktop"
+shortcut_file="$applications_dir/jmc.desktop"
 cat << _EOF_ > $shortcut_file
 [Desktop Entry]
 Name=Oracle Java Mission Control
@@ -198,6 +200,8 @@ _EOF_
 chmod +x $shortcut_file
 }
 
-if (confirm "Do you want to create a desktop shortcut to JMC?"); then
-    create_jmc_shortcut
+if [[ -d $applications_dir ]]; then
+    if (confirm "Do you want to create a desktop shortcut to JMC?"); then
+        create_jmc_shortcut
+    fi
 fi
