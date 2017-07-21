@@ -71,7 +71,11 @@ if [[ ! -f $java_dist ]]; then
     help
     exit 1
 fi
-
+#Check if unzip command exsists
+if [[ ! -f /usr/bin/unzip ]]; then
+    echo "Please install unzip(sudo apt -y install unzip)"
+    exit 1
+fi
 #If no directory was provided, we need to create the default one
 if [[ ! -d $java_dir ]]; then
     java_dir="/usr/lib/jvm"
