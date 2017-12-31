@@ -90,13 +90,26 @@ if [[ ! -d $java_dir ]]; then
     exit 1
 fi
 
-# Extract Java Distribution
+# Validate Java Distribution
 
 java_dist_filename=$(basename $java_dist)
 
-dirname=$(echo $java_dist_filename | sed 's/jdk-\([78]\)u\([0-9]\{2,3\}\)-linux.*/jdk1.\1.0_\2/')
+java_dist_file_regex="jdk-[789].*linux-x[3264]{2}(_bin)?\.tar\.gz"
+
+if [[ ! $java_dist_filename =~ $java_dist_file_regex ]]; then
+	echo "Please specify a valid java distribution"
+	exit 1
+fi
+
+if [[ $java_dist_filename =~ ^jdk-9.* ]]; then
+    dirname=$(echo $java_dist_filename | sed 's/jdk-\(9.*[0-9]*.*[0-9]*\)_linux.*/jdk-\1/')
+else
+    dirname=$(echo $java_dist_filename | sed 's/jdk-\([78]\)u\([0-9]\{2,3\}\)-linux.*/jdk1.\1.0_\2/')
+fi
 
 extracted_dirname=$java_dir"/"$dirname
+
+# Extract Java Distribution
 
 if [[ ! -d $extracted_dirname ]]; then
     echo "Extracting $java_dist to $java_dir"
@@ -114,7 +127,10 @@ fi
 
 # Install Demos
 
-demos_dist=$(dirname $java_dist)/$(echo $java_dist_filename | sed 's/jdk-\([78]u[0-9]\{2,3\}\)-linux-\(.*\).tar.gz/jdk-\1-linux-\2-demos.tar.gz/')
+if [[ ! $java_dist_filename =~ ^jdk-9.* ]]; then
+    # Demos are only available for Java 7 and 8
+    demos_dist=$(dirname $java_dist)/$(echo $java_dist_filename | sed 's/jdk-\([78]u[0-9]\{2,3\}\)-linux-\(.*\).tar.gz/jdk-\1-linux-\2-demos.tar.gz/')
+fi
 
 if [[ -f $demos_dist && ! -d $extracted_dirname/demo ]]; then
     # No demo directory
@@ -132,6 +148,8 @@ if [[ "$java_dist_filename" =~ ^jdk-7.* ]]; then
     unlimited_jce_policy_dist="$(dirname $java_dist)/UnlimitedJCEPolicyJDK7.zip"
 elif [[ "$java_dist_filename" =~ ^jdk-8.*  ]]; then
     unlimited_jce_policy_dist="$(dirname $java_dist)/jce_policy-8.zip"
+elif [[ "$java_dist_filename" =~ ^jdk-9.*  ]]; then
+    echo "Java 9 default JCE policy files already allow for \"unlimited\" cryptographic strengths."
 fi
 
 if [[ -f $unlimited_jce_policy_dist ]]; then
@@ -151,12 +169,14 @@ if (confirm "Run update-alternatives commands?"); then
     for i in "${commands[@]}"
     do
         command_path=$extracted_dirname/bin/$i
-        sudo update-alternatives --install "/usr/bin/$i" "$i" "$command_path" 10000
-        sudo update-alternatives --set "$i" "$command_path"
+        if [[ -f $command_path ]]; then
+            sudo update-alternatives --install "/usr/bin/$i" "$i" "$command_path" 10000
+            sudo update-alternatives --set "$i" "$command_path"
+        fi
     done
 
-    if [[ -d "/usr/lib/mozilla/plugins/" ]]; then
-        lib_path=$extracted_dirname/jre/lib/amd64/libnpjp2.so
+    lib_path=$extracted_dirname/jre/lib/amd64/libnpjp2.so
+    if [[ -d "/usr/lib/mozilla/plugins/" && -d $lib_path ]]; then
         sudo update-alternatives --install "/usr/lib/mozilla/plugins/libjavaplugin.so" "mozilla-javaplugin.so" "$lib_path" 10000
         sudo update-alternatives --set "mozilla-javaplugin.so" "$lib_path"
     fi
