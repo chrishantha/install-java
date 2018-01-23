@@ -76,14 +76,15 @@ if (confirm "Run update-alternatives commands?"); then
 
     for i in "${commands[@]}"
     do
-        sudo update-alternatives --remove "$i" "$java_dist_dir/bin/$i"
+        update-alternatives --remove "$i" "$java_dist_dir/bin/$i"
     done
 
     if [[ -d "/usr/lib/mozilla/plugins/" ]]; then
-        sudo update-alternatives --remove "mozilla-javaplugin.so" "$java_dist_dir/jre/lib/amd64/libnpjp2.so"
+        update-alternatives --remove "mozilla-javaplugin.so" "$java_dist_dir/jre/lib/amd64/libnpjp2.so"
     fi
 fi
 
 if (confirm "Remove directory '$java_dist_dir'?"); then
     rm -rf $java_dist_dir
 fi
+

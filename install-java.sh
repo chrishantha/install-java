@@ -74,7 +74,7 @@ fi
 
 #Check whether unzip command exsits
 if ! command -v unzip >/dev/null 2>&1; then
-    echo "Please install unzip (sudo apt -y install unzip)"
+    echo "Please install unzip (apt -y install unzip)"
     exit 1
 fi
 
@@ -170,15 +170,15 @@ if (confirm "Run update-alternatives commands?"); then
     do
         command_path=$extracted_dirname/bin/$i
         if [[ -f $command_path ]]; then
-            sudo update-alternatives --install "/usr/bin/$i" "$i" "$command_path" 10000
-            sudo update-alternatives --set "$i" "$command_path"
+            update-alternatives --install "/usr/bin/$i" "$i" "$command_path" 10000
+            update-alternatives --set "$i" "$command_path"
         fi
     done
 
     lib_path=$extracted_dirname/jre/lib/amd64/libnpjp2.so
     if [[ -d "/usr/lib/mozilla/plugins/" && -d $lib_path ]]; then
-        sudo update-alternatives --install "/usr/lib/mozilla/plugins/libjavaplugin.so" "mozilla-javaplugin.so" "$lib_path" 10000
-        sudo update-alternatives --set "mozilla-javaplugin.so" "$lib_path"
+        update-alternatives --install "/usr/lib/mozilla/plugins/libjavaplugin.so" "mozilla-javaplugin.so" "$lib_path" 10000
+        update-alternatives --set "mozilla-javaplugin.so" "$lib_path"
     fi
 fi
 
