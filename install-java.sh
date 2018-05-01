@@ -91,20 +91,19 @@ if [[ ! -d $java_dir ]]; then
 fi
 
 # Validate Java Distribution
-
 java_dist_filename=$(basename $java_dist)
 
-java_dist_file_regex="jdk-[789].*linux-x[3264]{2}(_bin)?\.tar\.gz"
+java_78_dist_file_regex="jdk-([78])u([0-9]{1,3})-linux-x(32|64)\.tar\.gz"
+java_9up_dist_file_regex="jdk-([91][0-9]?[0-9]*.*[0-9]*)_linux-x(32|64)_bin\.tar\.gz"
 
-if [[ ! $java_dist_filename =~ $java_dist_file_regex ]]; then
-	echo "Please specify a valid java distribution"
-	exit 1
-fi
-
-if [[ $java_dist_filename =~ ^jdk-9.* ]]; then
-    dirname=$(echo $java_dist_filename | sed 's/jdk-\(9.*[0-9]*.*[0-9]*\)_linux.*/jdk-\1/')
+if [[ $java_dist_filename =~ $java_78_dist_file_regex ]]; then
+    dirname=$(echo $java_dist_filename | sed -nE "s/$java_78_dist_file_regex/jdk1.\1.0_\2/p")
+elif [[ $java_dist_filename =~ $java_9up_dist_file_regex ]]; then
+    # dirname=$(echo $java_dist_filename | sed -nE 's/jdk-([91][0-9]?[0-9]*.*[0-9]*)_linux-x(32|64)_bin\.tar\.gz/jdk-\1/p')
+    dirname=$(echo $java_dist_filename | sed -nE "s/$java_9up_dist_file_regex/jdk-\1/p")
 else
-    dirname=$(echo $java_dist_filename | sed 's/jdk-\([78]\)u\([0-9]\{2,3\}\)-linux.*/jdk1.\1.0_\2/')
+    echo "Please specify a valid java distribution"
+    exit 1
 fi
 
 extracted_dirname=$java_dir"/"$dirname
@@ -127,9 +126,9 @@ fi
 
 # Install Demos
 
-if [[ ! $java_dist_filename =~ ^jdk-9.* ]]; then
+if [[ $java_dist_filename =~ $java_78_dist_file_regex ]]; then
     # Demos are only available for Java 7 and 8
-    demos_dist=$(dirname $java_dist)/$(echo $java_dist_filename | sed 's/jdk-\([78]u[0-9]\{2,3\}\)-linux-\(.*\).tar.gz/jdk-\1-linux-\2-demos.tar.gz/')
+    demos_dist=$(dirname $java_dist)"/"$(echo $java_dist_filename | sed 's/\.tar\.gz/-demos\0/')
 fi
 
 if [[ -f $demos_dist && ! -d $extracted_dirname/demo ]]; then
