@@ -23,19 +23,19 @@ For example, if you want to install Java 7, following files should be downloaded
 
 Similarly for Java 8, following are the files required
 
- - jdk-8u152-linux-x64.tar.gz
- - jdk-8u152-linux-x64-demos.tar.gz
+ - jdk-8u172-linux-x64.tar.gz
+ - jdk-8u172-linux-x64-demos.tar.gz
  - jce_policy-8.zip
 
-For Java 9, you only need to have the Java 9 binary distribution. For example,
+For Java 9 and 10, you only need to have the Java binary distribution. For example,
 
- - jdk-9.0.1_linux-x64_bin.tar.gz
+ - jdk-10.0.1_linux-x64_bin.tar.gz
 
 The Java Demos and Java Cryptography Extension (JCE) Unlimited Strength Jurisdiction Policy files are optional.
 
-There are no demos for Java 9.
+There are no demos from Java 9 upwards.
 
-Java 9 default JCE policy files already allow for "unlimited" cryptographic strengths.
+Since Java 9, default JCE policy files already allow for "unlimited" cryptographic strengths.
 
 ## Installation
 
@@ -57,11 +57,15 @@ Example: Install Oracle JDK 7
 
 Example: Install Oracle JDK 8
 
-`sudo ./install-java.sh -f ~/software/java/jdk-8u152-linux-x64.tar.gz`
+`sudo ./install-java.sh -f ~/software/java/jdk-8u172-linux-x64.tar.gz`
 
 Example: Install Oracle JDK 9
 
 `sudo ./install-java.sh -f ~/software/java/jdk-9.0.1_linux-x64_bin.tar.gz`
+
+Example: Install Oracle JDK 10
+
+`sudo ./install-java.sh -f ~/software/java/jdk-10.0.1_linux-x64_bin.tar.gz`
 
 ## Automate Java Installation
 
@@ -69,7 +73,7 @@ You can automate the Java installation script by using the `yes` command.
 
 Example: Install Oracle JDK 8
 
-`yes | sudo ./install-java.sh -f ~/software/java/jdk-8u152-linux-x64.tar.gz`
+`yes | sudo ./install-java.sh -f ~/software/java/jdk-8u172-linux-x64.tar.gz`
 
 ## Uninstallation
 
