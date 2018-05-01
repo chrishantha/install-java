@@ -181,15 +181,6 @@ if (confirm "Run update-alternatives commands?"); then
     fi
 fi
 
-# Configure Java Mission Control
-# Commented following configuration as the Welcome page is working in latest JMC included in Java 8u45 and 7u80.
-# missioncontrol_config=$extracted_dirname/lib/missioncontrol/configuration/config.ini
-
-# if ( (! grep -q mozilla "$missioncontrol_config") && confirm "Change default browser in Java Mission Control to Mozilla?"); then
-#     echo org.eclipse.swt.browser.DefaultType=mozilla >> $missioncontrol_config
-# fi
-
-
 # Create system preferences directory
 java_system_prefs_dir="/etc/.java/.systemPrefs"
 if [[ ! -d $java_system_prefs_dir ]]; then
