@@ -94,19 +94,25 @@ fi
 java_dist_filename=$(basename $java_dist)
 
 java_78_dist_file_regex="jdk-([78])u([0-9]{1,3})-linux-x(32|64)\.tar\.gz"
-java_9up_dist_file_regex="jdk-([91][0-9]?[0-9]*.*[0-9]*)_linux-x(32|64)_bin\.tar\.gz"
+java_9up_dist_file_regex="jdk-([91][0-9]?\.?[0-9]*\.?[0-9]*)_linux-x(32|64)_bin\.tar\.gz"
+
+# JDK Directory with version
+jdk_dir=""
+# JDK Major Version
+jdk_major_version=""
 
 if [[ $java_dist_filename =~ $java_78_dist_file_regex ]]; then
-    dirname=$(echo $java_dist_filename | sed -nE "s/$java_78_dist_file_regex/jdk1.\1.0_\2/p")
+    jdk_dir=$(echo $java_dist_filename | sed -nE "s/$java_78_dist_file_regex/jdk1.\1.0_\2/p")
+    jdk_major_version=$(echo $jdk_dir | sed -nE 's/jdk1\.([0-9]*).*/\1/p')
 elif [[ $java_dist_filename =~ $java_9up_dist_file_regex ]]; then
-    # dirname=$(echo $java_dist_filename | sed -nE 's/jdk-([91][0-9]?[0-9]*.*[0-9]*)_linux-x(32|64)_bin\.tar\.gz/jdk-\1/p')
-    dirname=$(echo $java_dist_filename | sed -nE "s/$java_9up_dist_file_regex/jdk-\1/p")
+    jdk_dir=$(echo $java_dist_filename | sed -nE "s/$java_9up_dist_file_regex/jdk-\1/p")
+    jdk_major_version=$(echo $jdk_dir | sed -nE 's/jdk-([0-9]*).*/\1/p')
 else
     echo "Please specify a valid java distribution"
     exit 1
 fi
 
-extracted_dirname=$java_dir"/"$dirname
+extracted_dirname=$java_dir"/"$jdk_dir
 
 # Extract Java Distribution
 
@@ -203,11 +209,11 @@ fi
 applications_dir="$HOME/.local/share/applications"
 
 create_jmc_shortcut() {
-shortcut_file="$applications_dir/jmc.desktop"
+shortcut_file="$applications_dir/jmc_$jdk_major_version.desktop"
 cat << _EOF_ > $shortcut_file
 [Desktop Entry]
-Name=Oracle Java Mission Control
-Comment=Oracle Java Mission Control
+Name=Java $jdk_major_version: JMC
+Comment=Oracle Java Mission Control for Java $jdk_major_version
 Type=Application
 Exec=$extracted_dirname/bin/jmc
 Icon=$extracted_dirname/lib/missioncontrol/icon.xpm
