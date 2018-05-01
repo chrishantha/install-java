@@ -75,6 +75,14 @@ Example: Install Oracle JDK 8
 
 `yes | sudo ./install-java.sh -f ~/software/java/jdk-8u172-linux-x64.tar.gz`
 
+## Java Mission Control
+
+The installation script will also create a shortcut for Oracle Java Mission Control (JMC).
+
+If the "Welcome" page is blank in JMC, try installing `libwebkitgtk-3.0-0` package.
+
+`sudo apt install libwebkitgtk-3.0-0`
+
 ## Uninstallation
 
 There is another script named "uninstall-java.sh" to uninstall Java. 
