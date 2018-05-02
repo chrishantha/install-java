@@ -79,7 +79,7 @@ if ! command -v unzip >/dev/null 2>&1; then
 fi
 
 #If no directory was provided, we need to create the default one
-if [[ ! -d $java_dir ]]; then
+if [[ -z $java_dir ]]; then
     java_dir="/usr/lib/jvm"
     mkdir -p $java_dir
 fi
