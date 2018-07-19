@@ -93,7 +93,7 @@ fi
 # Validate Java Distribution
 java_dist_filename=$(basename $java_dist)
 
-java_78_dist_file_regex="jdk-([78])u([0-9]{1,3})-linux-x(32|64)\.tar\.gz"
+java_78_dist_file_regex="jdk-([78])u([0-9]{1,3})-linux-(i586|x64)\.tar\.gz"
 java_9up_dist_file_regex="jdk-([91][0-9]?\.?[0-9]*\.?[0-9]*)_linux-x(32|64)_bin\.tar\.gz"
 
 # JDK Directory with version
