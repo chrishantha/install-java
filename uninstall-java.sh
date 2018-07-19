@@ -88,3 +88,17 @@ if (confirm "Remove directory '$java_dist_dir'?"); then
     rm -rf $java_dist_dir
 fi
 
+jdk_major_version=""
+
+if [[ $java_dist_dir =~ .*jdk1\.([0-9]*).* ]]; then
+    jdk_major_version=$(echo $java_dist_dir | sed -nE 's/.*jdk1\.([0-9]*).*/\1/p')
+elif [[ $java_dist_dir =~ .*jdk-([0-9]*).* ]]; then
+    jdk_major_version=$(echo $java_dist_dir | sed -nE 's/.*jdk-([0-9]*).*/\1/p')
+fi
+
+applications_dir="$HOME/.local/share/applications"
+jmc_shortcut_file="$applications_dir/jmc_$jdk_major_version.desktop"
+
+if [ -f $jmc_shortcut_file ] && (confirm "Remove JMC shortcut?"); then
+    rm $jmc_shortcut_file
+fi
