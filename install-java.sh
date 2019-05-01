@@ -17,14 +17,18 @@
 # Installation script for setting up Java on Linux
 # ----------------------------------------------------------------------------
 
+java_bash_profile="/etc/profile.d/jdk.sh"
+
 java_dist=""
 java_dir=""
+say_yes_no="no" # you can make 'no' a default to avoid prompt altogether
 
 function help {
     echo ""
     echo "Usage: "
-    echo "install-java.sh -f <java_dist> [-p] <java_dir>"
+    echo "install-java.sh [-y] -f <java_dist> [-p <java_dir>]"
     echo ""
+    echo "-y say 'yes' to all questions"
     echo "-f: The jdk tar.gz file"
     echo "-p: Java installation directory"
     echo ""
@@ -32,7 +36,8 @@ function help {
 
 confirm () {
     # call with a prompt string or use a default
-    read -r -p "${1:-Are you sure?} [y/N] " response
+    response="$say_yes_no"
+    [[ -z "$response" ]] && read -r -p "${1:-Are you sure?} [y/N] " response
     case $response in
         [yY][eE][sS]|[yY]) 
             true
@@ -49,10 +54,13 @@ if [ "$UID" -ne "0" ]; then
     exit 9
 fi
 
-
-while getopts "f:p:" opts
+# See https://wiki.bash-hackers.org/howto/getopts_tutorial
+while getopts "yf:p:" opts
 do
   case $opts in
+    y)
+        say_yes_no="yes"
+        ;;
     f)
         java_dist=${OPTARG}
         ;;
@@ -197,13 +205,20 @@ if [[ ! -d $java_system_prefs_dir ]]; then
     fi
 fi
 
-if (confirm "Do you want to set JAVA_HOME environment variable?"); then
-    if grep -q "export JAVA_HOME=.*" $HOME/.bashrc; then
-        sed -i "s|export JAVA_HOME=.*|export JAVA_HOME=$extracted_dirname|" $HOME/.bashrc
+if (confirm "Do you want to create/update JDK bash profile?"); then
+    echo "Creating/updating JDK profile"
+    touch $java_bash_profile
+    if grep -q "export JAVA_HOME=.*" $java_bash_profile; then
+        sed -i "s|export JAVA_HOME=.*|export JAVA_HOME=$extracted_dirname|" $java_bash_profile
     else
-        echo "export JAVA_HOME=$extracted_dirname" >> $HOME/.bashrc
+        echo "export JAVA_HOME=$extracted_dirname" >> $java_bash_profile
     fi
-    source $HOME/.bashrc
+    if grep -q "export J2REDIR=.*" $java_bash_profile; then
+        sed -i "s|export J2REDIR=.*|export J2REDIR=$extracted_dirname/jre|" $java_bash_profile
+    else
+        echo "export J2REDIR=$extracted_dirname/jre" >> $java_bash_profile
+    fi
+    source $java_bash_profile
 fi
 
 applications_dir="$HOME/.local/share/applications"
