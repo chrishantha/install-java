@@ -21,7 +21,7 @@ java_bash_profile="/etc/profile.d/jdk.sh"
 
 java_dist=""
 java_dir=""
-say_yes_no="no" # you can make 'no' a default to avoid prompt altogether
+say_yes_no="" # you can make 'no' a default to avoid prompt altogether
 
 function help {
     echo ""
