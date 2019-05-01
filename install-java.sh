@@ -218,6 +218,7 @@ if (confirm "Do you want to create/update JDK bash profile?"); then
     else
         echo "export J2REDIR=$extracted_dirname/jre" >> $java_bash_profile
     fi
+    chmod 755 $java_bash_profile
     source $java_bash_profile
 fi
 
