@@ -20,7 +20,7 @@
 java_dist=""
 java_dir=""
 
-function help {
+function help() {
     echo ""
     echo "Usage: "
     echo "install-java.sh -f <java_dist> [-p] <java_dir>"
@@ -30,29 +30,28 @@ function help {
     echo ""
 }
 
-confirm () {
+confirm() {
     # call with a prompt string or use a default
     read -r -p "${1:-Are you sure?} [y/N] " response
     case $response in
-        [yY][eE][sS]|[yY]) 
-            true
-            ;;
-        *)
-            false
-            ;;
+    [yY][eE][sS] | [yY])
+        true
+        ;;
+    *)
+        false
+        ;;
     esac
 }
 
 # Make sure the script is running as root.
 if [ "$UID" -ne "0" ]; then
-    echo "You must be root to run $0. Try following"; echo "sudo $0";
+    echo "You must be root to run $0. Try following"
+    echo "sudo $0"
     exit 9
 fi
 
-
-while getopts "f:p:" opts
-do
-  case $opts in
+while getopts "f:p:" opts; do
+    case $opts in
     f)
         java_dist=${OPTARG}
         ;;
@@ -63,11 +62,11 @@ do
         help
         exit 1
         ;;
-  esac
+    esac
 done
 
 if [[ ! -f $java_dist ]]; then
-    echo "Please specify the java distribution file (tar.gz)"
+    echo "Please specify the Java distribution file (tar.gz)"
     help
     exit 1
 fi
@@ -86,17 +85,18 @@ fi
 
 #Validate java directory
 if [[ ! -d $java_dir ]]; then
-    echo "Please specify a valid java installation directory"
+    echo "Please specify a valid Java installation directory"
     exit 1
 fi
 
 # Validate Java Distribution
 java_dist_filename=$(basename $java_dist)
+echo "Installing $java_dist_filename"
 
-java_78_dist_file_regex="jdk-([78])u([0-9]{1,3})-linux-(i586|x64)\.tar\.gz"
-java_9up_dist_file_regex="jdk-([91][0-9]?\.?[0-9]*\.?[0-9]*)_linux-x(32|64)_bin\.tar\.gz"
+java_78_dist_file_regex="^jdk-([78])u([0-9]{1,3})-linux-(i586|x64)\.tar\.gz$"
+java_9up_dist_file_regex="^(open)?jdk-([91][0-9]?\.?[0-9]*\.?[0-9]*)_linux-x(32|64)_bin\.tar\.gz$"
 
-# JDK Directory with version
+# JDK Directory with version (tar -tzf $java_dist | head -1 | cut -f1 -d"/")
 jdk_dir=""
 # JDK Major Version
 jdk_major_version=""
@@ -105,10 +105,10 @@ if [[ $java_dist_filename =~ $java_78_dist_file_regex ]]; then
     jdk_dir=$(echo $java_dist_filename | sed -nE "s/$java_78_dist_file_regex/jdk1.\1.0_\2/p")
     jdk_major_version=$(echo $jdk_dir | sed -nE 's/jdk1\.([0-9]*).*/\1/p')
 elif [[ $java_dist_filename =~ $java_9up_dist_file_regex ]]; then
-    jdk_dir=$(echo $java_dist_filename | sed -nE "s/$java_9up_dist_file_regex/jdk-\1/p")
+    jdk_dir=$(echo $java_dist_filename | sed -nE "s/$java_9up_dist_file_regex/jdk-\2/p")
     jdk_major_version=$(echo $jdk_dir | sed -nE 's/jdk-([0-9]*).*/\1/p')
 else
-    echo "Please specify a valid java distribution"
+    echo "Please specify a valid Java distribution"
     exit 1
 fi
 
@@ -120,15 +120,19 @@ if [[ ! -d $extracted_dirname ]]; then
     echo "Extracting $java_dist to $java_dir"
     tar -xof $java_dist -C $java_dir
     echo "JDK is extracted to $extracted_dirname"
-else 
-    echo "JDK is already extracted to $extracted_dirname"
+else
+    echo "WARN: JDK was not extracted to $extracted_dirname. The path already exists."
 fi
-
 
 if [[ ! -f $extracted_dirname"/bin/java" ]]; then
-    echo "Couldn't check the extracted directory. Please check the installation script"
+    echo "ERROR: The path $extracted_dirname is not a valid Java installation."
     exit 1
 fi
+
+# print "Java version"
+echo "------------------------------------------------------------------------------"
+${extracted_dirname}/bin/java -version
+echo "------------------------------------------------------------------------------"
 
 # Install Demos
 
@@ -145,16 +149,15 @@ if [[ -f $demos_dist && ! -d $extracted_dirname/demo ]]; then
     fi
 fi
 
-# Install Unlimited JCE Policy
+# Install Unlimited JCE Policy (only for Oracle JDK 7 & 8)
+# Java 9 and above: default JCE policy files already allow for \"unlimited\" cryptographic strengths.
 
 unlimited_jce_policy_dist=""
 
 if [[ "$java_dist_filename" =~ ^jdk-7.* ]]; then
     unlimited_jce_policy_dist="$(dirname $java_dist)/UnlimitedJCEPolicyJDK7.zip"
-elif [[ "$java_dist_filename" =~ ^jdk-8.*  ]]; then
+elif [[ "$java_dist_filename" =~ ^jdk-8.* ]]; then
     unlimited_jce_policy_dist="$(dirname $java_dist)/jce_policy-8.zip"
-elif [[ "$java_dist_filename" =~ ^jdk-9.*  ]]; then
-    echo "Java 9 default JCE policy files already allow for \"unlimited\" cryptographic strengths."
 fi
 
 if [[ -f $unlimited_jce_policy_dist ]]; then
@@ -166,13 +169,12 @@ fi
 
 # Run update-alternatives commands
 
-commands=( "jar" "java" "javac" "javadoc" "javah" "javap" "javaws" "jcmd" "jconsole" "jarsigner" "jhat" "jinfo" "jmap" "jmc" "jps" "jstack" "jstat" "jstatd" "jvisualvm" "keytool" "policytool" "wsgen" "wsimport" )
+commands=("jar" "java" "javac" "javadoc" "javah" "javap" "javaws" "jcmd" "jconsole" "jarsigner" "jhat" "jinfo" "jmap" "jmc" "jps" "jstack" "jstat" "jstatd" "jvisualvm" "keytool" "policytool" "wsgen" "wsimport")
 
 if (confirm "Run update-alternatives commands?"); then
     echo "Running update-alternatives --install and --config for ${commands[@]} mozilla-javaplugin.so"
 
-    for i in "${commands[@]}"
-    do
+    for i in "${commands[@]}"; do
         command_path=$extracted_dirname/bin/$i
         if [[ -f $command_path ]]; then
             update-alternatives --install "/usr/bin/$i" "$i" "$command_path" 10000
@@ -181,7 +183,7 @@ if (confirm "Run update-alternatives commands?"); then
     done
 
     lib_path=$extracted_dirname/jre/lib/amd64/libnpjp2.so
-    if [[ -d "/usr/lib/mozilla/plugins/" && -d $lib_path ]]; then
+    if [[ -d "/usr/lib/mozilla/plugins/" ]] && [[ -f $lib_path ]]; then
         update-alternatives --install "/usr/lib/mozilla/plugins/libjavaplugin.so" "mozilla-javaplugin.so" "$lib_path" 10000
         update-alternatives --set "mozilla-javaplugin.so" "$lib_path"
     fi
@@ -201,7 +203,7 @@ if (confirm "Do you want to set JAVA_HOME environment variable?"); then
     if grep -q "export JAVA_HOME=.*" $HOME/.bashrc; then
         sed -i "s|export JAVA_HOME=.*|export JAVA_HOME=$extracted_dirname|" $HOME/.bashrc
     else
-        echo "export JAVA_HOME=$extracted_dirname" >> $HOME/.bashrc
+        echo "export JAVA_HOME=$extracted_dirname" >>$HOME/.bashrc
     fi
     source $HOME/.bashrc
 fi
@@ -209,8 +211,8 @@ fi
 applications_dir="$HOME/.local/share/applications"
 
 create_jmc_shortcut() {
-shortcut_file="$applications_dir/jmc_$jdk_major_version.desktop"
-cat << _EOF_ > $shortcut_file
+    shortcut_file="$applications_dir/jmc_$jdk_major_version.desktop"
+    cat <<_EOF_ >$shortcut_file
 [Desktop Entry]
 Name=Java $jdk_major_version: JMC
 Comment=Oracle Java Mission Control for Java $jdk_major_version
@@ -219,10 +221,10 @@ Exec=$extracted_dirname/bin/jmc
 Icon=$extracted_dirname/lib/missioncontrol/icon.xpm
 Terminal=false
 _EOF_
-chmod +x $shortcut_file
+    chmod +x $shortcut_file
 }
 
-if [[ -d $applications_dir ]]; then
+if [[ -d $applications_dir ]] && [[ -f $extracted_dirname/bin/jmc ]]; then
     if (confirm "Do you want to create a desktop shortcut to JMC?"); then
         create_jmc_shortcut
     fi

@@ -19,7 +19,7 @@
 
 java_dist_dir=""
 
-function help {
+function help() {
     echo ""
     echo "Usage: "
     echo "uninstall-java.sh -p <java_dist_dir>"
@@ -28,29 +28,28 @@ function help {
     echo ""
 }
 
-confirm () {
+confirm() {
     # call with a prompt string or use a default
     read -r -p "${1:-Are you sure?} [y/N] " response
     case $response in
-        [yY][eE][sS]|[yY]) 
-            true
-            ;;
-        *)
-            false
-            ;;
+    [yY][eE][sS] | [yY])
+        true
+        ;;
+    *)
+        false
+        ;;
     esac
 }
 
 # Make sure the script is running as root.
 if [ "$UID" -ne "0" ]; then
-    echo "You must be root to run $0. Try following"; echo "sudo $0";
+    echo "You must be root to run $0. Try following"
+    echo "sudo $0"
     exit 9
 fi
 
-
-while getopts "p:" opts
-do
-  case $opts in
+while getopts "p:" opts; do
+    case $opts in
     p)
         java_dist_dir=${OPTARG}
         ;;
@@ -58,7 +57,7 @@ do
         help
         exit 1
         ;;
-  esac
+    esac
 done
 
 if [[ ! -f $java_dist_dir/bin/java ]]; then
@@ -69,13 +68,12 @@ fi
 
 # Run update-alternatives commands
 
-commands=( "jar" "java" "javac" "javadoc" "javah" "javap" "javaws" "jcmd" "jconsole" "jarsigner" "jhat" "jinfo" "jmap" "jmc" "jps" "jstack" "jstat" "jstatd" "jvisualvm" "keytool" "policytool" "wsgen" "wsimport" )
+commands=("jar" "java" "javac" "javadoc" "javah" "javap" "javaws" "jcmd" "jconsole" "jarsigner" "jhat" "jinfo" "jmap" "jmc" "jps" "jstack" "jstat" "jstatd" "jvisualvm" "keytool" "policytool" "wsgen" "wsimport")
 
 if (confirm "Run update-alternatives commands?"); then
     echo "Running update-alternatives --remove for ${commands[@]} mozilla-javaplugin.so"
 
-    for i in "${commands[@]}"
-    do
+    for i in "${commands[@]}"; do
         update-alternatives --remove "$i" "$java_dist_dir/bin/$i"
     done
 
