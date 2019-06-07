@@ -18,19 +18,21 @@
 # ----------------------------------------------------------------------------
 
 java_dist=""
-java_dir=""
+default_java_dir="/usr/lib/jvm"
+java_dir="$default_java_dir"
 
-function help() {
+function usage() {
     echo ""
     echo "Usage: "
-    echo "install-java.sh -f <java_dist> [-p] <java_dir>"
+    echo "install-java.sh -f <java_dist> [-p <java_dir>]"
     echo ""
-    echo "-f: The jdk tar.gz file"
-    echo "-p: Java installation directory"
+    echo "-f: The jdk tar.gz file."
+    echo "-p: Java installation directory. Default: $default_java_dir."
+    echo "-h: Display this help and exit."
     echo ""
 }
 
-confirm() {
+function confirm() {
     # call with a prompt string or use a default
     read -r -p "${1:-Are you sure?} [y/N] " response
     case $response in
@@ -50,7 +52,7 @@ if [ "$UID" -ne "0" ]; then
     exit 9
 fi
 
-while getopts "f:p:" opts; do
+while getopts "f:p:h" opts; do
     case $opts in
     f)
         java_dist=${OPTARG}
@@ -58,85 +60,93 @@ while getopts "f:p:" opts; do
     p)
         java_dir=${OPTARG}
         ;;
+    h)
+        usage
+        exit 0
+        ;;
     \?)
-        help
+        usage
         exit 1
         ;;
     esac
 done
 
 if [[ ! -f $java_dist ]]; then
-    echo "Please specify the Java distribution file (tar.gz)"
-    help
-    exit 1
-fi
-
-#Check whether unzip command exsits
-if ! command -v unzip >/dev/null 2>&1; then
-    echo "Please install unzip (apt -y install unzip)"
-    exit 1
-fi
-
-#If no directory was provided, we need to create the default one
-if [[ -z $java_dir ]]; then
-    java_dir="/usr/lib/jvm"
-    mkdir -p $java_dir
-fi
-
-#Validate java directory
-if [[ ! -d $java_dir ]]; then
-    echo "Please specify a valid Java installation directory"
+    echo "Please specify the Java distribution file."
     exit 1
 fi
 
 # Validate Java Distribution
 java_dist_filename=$(basename $java_dist)
-echo "Installing $java_dist_filename"
 
-java_78_dist_file_regex="^jdk-([78])u([0-9]{1,3})-linux-(i586|x64)\.tar\.gz$"
-java_9up_dist_file_regex="^(open)?jdk-([91][0-9]?\.?[0-9]*\.?[0-9]*)_linux-x(32|64)_bin\.tar\.gz$"
-
-# JDK Directory with version (tar -tzf $java_dist | head -1 | cut -f1 -d"/")
-jdk_dir=""
-# JDK Major Version
-jdk_major_version=""
-
-if [[ $java_dist_filename =~ $java_78_dist_file_regex ]]; then
-    jdk_dir=$(echo $java_dist_filename | sed -nE "s/$java_78_dist_file_regex/jdk1.\1.0_\2/p")
-    jdk_major_version=$(echo $jdk_dir | sed -nE 's/jdk1\.([0-9]*).*/\1/p')
-elif [[ $java_dist_filename =~ $java_9up_dist_file_regex ]]; then
-    jdk_dir=$(echo $java_dist_filename | sed -nE "s/$java_9up_dist_file_regex/jdk-\2/p")
-    jdk_major_version=$(echo $jdk_dir | sed -nE 's/jdk-([0-9]*).*/\1/p')
-else
-    echo "Please specify a valid Java distribution"
+if [[ ${java_dist_filename: -7} != ".tar.gz" ]]; then
+    echo "Java distribution must be a valid tar.gz file."
     exit 1
 fi
 
+#Check whether unzip command exsits
+if ! command -v unzip >/dev/null 2>&1; then
+    echo "Please install unzip (apt -y install unzip)."
+    exit 1
+fi
+
+# Create the default directory if user has not specified any other path
+if [[ $java_dir == $default_java_dir ]]; then
+    mkdir -p $java_dir
+fi
+
+#Validate java directory
+if [[ ! -d $java_dir ]]; then
+    echo "Please specify a valid Java installation directory."
+    exit 1
+fi
+
+echo "Installing: $java_dist_filename"
+
+# Check Java executable
+java_exec="$(tar -tzf $java_dist | grep ^[^/]*/bin/java$ || echo "")"
+
+if [[ -z $java_exec ]]; then
+    echo "Could not find \"java\" executable in the distribution. Please specify a valid Java distribution."
+    exit 1
+fi
+
+# JDK Directory with version
+jdk_dir="$(echo $java_exec | cut -f1 -d"/")"
 extracted_dirname=$java_dir"/"$jdk_dir
 
 # Extract Java Distribution
-
 if [[ ! -d $extracted_dirname ]]; then
     echo "Extracting $java_dist to $java_dir"
     tar -xof $java_dist -C $java_dir
     echo "JDK is extracted to $extracted_dirname"
 else
-    echo "WARN: JDK was not extracted to $extracted_dirname. The path already exists."
+    echo "WARN: JDK was not extracted to $java_dir. There is an existing directory with name $jdk_dir."
+    exit 1
 fi
 
-if [[ ! -f $extracted_dirname"/bin/java" ]]; then
+if [[ ! -f "${extracted_dirname}/bin/java" ]]; then
     echo "ERROR: The path $extracted_dirname is not a valid Java installation."
     exit 1
 fi
 
-# print "Java version"
-echo "------------------------------------------------------------------------------"
-${extracted_dirname}/bin/java -version
-echo "------------------------------------------------------------------------------"
+# Oracle JDK: 7 to 8
+java_78_dir_regex="^jdk1\.([0-9]*).*$"
+# Oracle JDK / OpenJDK / AdoptOpenJDK: 9 and upwards
+java_9up_dir_regex="^jdk-([0-9]*).*$"
+
+# JDK Major Version
+jdk_major_version=""
+
+if [[ $jdk_dir =~ $java_78_dir_regex ]]; then
+    jdk_major_version=$(echo $jdk_dir | sed -nE "s/$java_78_dir_regex/\1/p")
+else
+    jdk_major_version=$(echo $jdk_dir | sed -nE "s/$java_9up_dir_regex/\1/p")
+fi
 
 # Install Demos
 
-if [[ $java_dist_filename =~ $java_78_dist_file_regex ]]; then
+if [[ $jdk_dir =~ $java_78_dir_regex ]]; then
     # Demos are only available for Java 7 and 8
     demos_dist=$(dirname $java_dist)"/"$(echo $java_dist_filename | sed 's/\.tar\.gz/-demos\0/')
 fi
@@ -154,9 +164,9 @@ fi
 
 unlimited_jce_policy_dist=""
 
-if [[ "$java_dist_filename" =~ ^jdk-7.* ]]; then
+if [[ $jdk_dir =~ ^jdk1\.7.* ]]; then
     unlimited_jce_policy_dist="$(dirname $java_dist)/UnlimitedJCEPolicyJDK7.zip"
-elif [[ "$java_dist_filename" =~ ^jdk-8.* ]]; then
+elif [[ $jdk_dir =~ ^jdk1\.8.* ]]; then
     unlimited_jce_policy_dist="$(dirname $java_dist)/jce_policy-8.zip"
 fi
 
@@ -168,17 +178,14 @@ if [[ -f $unlimited_jce_policy_dist ]]; then
 fi
 
 # Run update-alternatives commands
-
-commands=("jar" "java" "javac" "javadoc" "javah" "javap" "javaws" "jcmd" "jconsole" "jarsigner" "jhat" "jinfo" "jmap" "jmc" "jps" "jstack" "jstat" "jstatd" "jvisualvm" "keytool" "policytool" "wsgen" "wsimport")
-
 if (confirm "Run update-alternatives commands?"); then
-    echo "Running update-alternatives --install and --config for ${commands[@]} mozilla-javaplugin.so"
-
-    for i in "${commands[@]}"; do
-        command_path=$extracted_dirname/bin/$i
-        if [[ -f $command_path ]]; then
-            update-alternatives --install "/usr/bin/$i" "$i" "$command_path" 10000
-            update-alternatives --set "$i" "$command_path"
+    echo "Running update-alternatives..."
+    declare -a commands=($(ls -1 ${extracted_dirname}/bin))
+    for command in "${commands[@]}"; do
+        command_path=$extracted_dirname/bin/$command
+        if [[ -x $command_path ]]; then
+            update-alternatives --install "/usr/bin/$command" "$command" "$command_path" 10000
+            update-alternatives --set "$command" "$command_path"
         fi
     done
 
@@ -192,14 +199,14 @@ fi
 # Create system preferences directory
 java_system_prefs_dir="/etc/.java/.systemPrefs"
 if [[ ! -d $java_system_prefs_dir ]]; then
-    if (confirm "Create Java System Prefs Directory and change ownership to $SUDO_USER:$SUDO_USER?"); then
+    if (confirm "Create Java System Prefs Directory ($java_system_prefs_dir) and change ownership to $SUDO_USER:$SUDO_USER?"); then
         echo "Creating $java_system_prefs_dir"
         mkdir -p $java_system_prefs_dir
         chown -R $SUDO_USER:$SUDO_USER $java_system_prefs_dir
     fi
 fi
 
-if (confirm "Do you want to set JAVA_HOME environment variable?"); then
+if (confirm "Do you want to set JAVA_HOME environment variable in $HOME/.bashrc?"); then
     if grep -q "export JAVA_HOME=.*" $HOME/.bashrc; then
         sed -i "s|export JAVA_HOME=.*|export JAVA_HOME=$extracted_dirname|" $HOME/.bashrc
     else

@@ -19,16 +19,17 @@
 
 java_dist_dir=""
 
-function help() {
+function usage() {
     echo ""
     echo "Usage: "
     echo "uninstall-java.sh -p <java_dist_dir>"
     echo ""
-    echo "-p: Java distribution directory"
+    echo "-p: Java distribution directory."
+    echo "-h: Display this help and exit."
     echo ""
 }
 
-confirm() {
+function confirm() {
     # call with a prompt string or use a default
     read -r -p "${1:-Are you sure?} [y/N] " response
     case $response in
@@ -48,37 +49,47 @@ if [ "$UID" -ne "0" ]; then
     exit 9
 fi
 
-while getopts "p:" opts; do
+while getopts "p:h" opts; do
     case $opts in
     p)
         java_dist_dir=${OPTARG}
         ;;
+    h)
+        usage
+        exit 0
+        ;;
     \?)
-        help
+        usage
         exit 1
         ;;
     esac
 done
 
+if [[ -z $java_dist_dir ]]; then
+    echo "Please provide Java installation directory."
+fi
+
+echo "Uninstalling: $java_dist_dir"
+
 if [[ ! -f $java_dist_dir/bin/java ]]; then
-    echo "Please specify a valid java distribution directory"
-    help
+    echo "Please specify a valid Java distribution directory"
     exit 1
 fi
 
 # Run update-alternatives commands
-
-commands=("jar" "java" "javac" "javadoc" "javah" "javap" "javaws" "jcmd" "jconsole" "jarsigner" "jhat" "jinfo" "jmap" "jmc" "jps" "jstack" "jstat" "jstatd" "jvisualvm" "keytool" "policytool" "wsgen" "wsimport")
-
 if (confirm "Run update-alternatives commands?"); then
-    echo "Running update-alternatives --remove for ${commands[@]} mozilla-javaplugin.so"
-
-    for i in "${commands[@]}"; do
-        update-alternatives --remove "$i" "$java_dist_dir/bin/$i"
+    echo "Running update-alternatives..."
+    declare -a commands=($(ls -1 ${java_dist_dir}/bin))
+    for command in "${commands[@]}"; do
+        command_path="$java_dist_dir/bin/$command"
+        if [[ -x $command_path ]]; then
+            update-alternatives --remove "$command" "$command_path"
+        fi
     done
 
-    if [[ -d "/usr/lib/mozilla/plugins/" ]]; then
-        update-alternatives --remove "mozilla-javaplugin.so" "$java_dist_dir/jre/lib/amd64/libnpjp2.so"
+    lib_path="$java_dist_dir/jre/lib/amd64/libnpjp2.so"
+    if [[ -d "/usr/lib/mozilla/plugins/" ]] && [[ -f $lib_path ]]; then
+        update-alternatives --remove "mozilla-javaplugin.so" "$lib_path"
     fi
 fi
 
