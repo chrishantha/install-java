@@ -23,6 +23,7 @@ java_dir="$default_java_dir"
 
 function usage() {
     echo ""
+    echo "This script will not download the Java distribution. You must download JDK tar.gz distribution. Then use this script to install it."
     echo "Usage: "
     echo "install-java.sh -f <java_dist> [-p <java_dir>]"
     echo ""
@@ -73,6 +74,7 @@ done
 
 if [[ ! -f $java_dist ]]; then
     echo "Please specify the Java distribution file."
+    echo "Use -h for help."
     exit 1
 fi
 
