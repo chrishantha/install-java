@@ -208,13 +208,14 @@ if [[ ! -d $java_system_prefs_dir ]]; then
     fi
 fi
 
-if (confirm "Do you want to set JAVA_HOME environment variable in $HOME/.bashrc?"); then
-    if grep -q "export JAVA_HOME=.*" $HOME/.bashrc; then
-        sed -i "s|export JAVA_HOME=.*|export JAVA_HOME=$extracted_dirname|" $HOME/.bashrc
-    else
-        echo "export JAVA_HOME=$extracted_dirname" >>$HOME/.bashrc
-    fi
-    source $HOME/.bashrc
+if (confirm "Do you want to set JAVA_HOME environment variable in /etc/profile.d/oracle-java.sh?"); then
+    cat > /etc/profile.d/oracle-java.sh <<-EOF
+	export JAVA_HOME=$extracted_dirname
+	export J2SDKDIR=$extracted_dirname
+	export J2REDIR=$extracted_dirname/jre
+	export DERBY_HOME=$extracted_dirname/db
+	export PATH=$PATH:$extracted_dirname/bin:$extracted_dirname/db/bin:$extracted_dirname/jre/bin
+	EOF
 fi
 
 applications_dir="$HOME/.local/share/applications"
