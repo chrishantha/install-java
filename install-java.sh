@@ -182,20 +182,21 @@ fi
 # Run update-alternatives commands
 if (confirm "Run update-alternatives commands?"); then
     echo "Running update-alternatives..."
-    declare -a commands=($(ls -1 ${extracted_dirname}/bin))
+    cmd="update-alternatives --install /usr/bin/java java $extracted_dirname/bin/java 10000"
+    declare -a commands=($(ls -1 ${extracted_dirname}/bin | grep -v ^java$))
     for command in "${commands[@]}"; do
         command_path=$extracted_dirname/bin/$command
         if [[ -x $command_path ]]; then
-            update-alternatives --install "/usr/bin/$command" "$command" "$command_path" 10000
-            update-alternatives --set "$command" "$command_path"
+            cmd="$cmd --slave /usr/bin/$command $command $command_path"
         fi
     done
-
     lib_path=$extracted_dirname/jre/lib/amd64/libnpjp2.so
     if [[ -d "/usr/lib/mozilla/plugins/" ]] && [[ -f $lib_path ]]; then
-        update-alternatives --install "/usr/lib/mozilla/plugins/libjavaplugin.so" "mozilla-javaplugin.so" "$lib_path" 10000
-        update-alternatives --set "mozilla-javaplugin.so" "$lib_path"
+        cmd="$cmd --slave /usr/lib/mozilla/plugins/libjavaplugin.so mozilla-javaplugin.so $lib_path"
     fi
+    echo $cmd
+    exec $cmd 
+    update-alternatives --set java $extracted_dirname/bin/java
 fi
 
 # Create system preferences directory
