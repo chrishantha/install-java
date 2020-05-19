@@ -195,7 +195,8 @@ if (confirm "Run update-alternatives commands?"); then
         cmd="$cmd --slave /usr/lib/mozilla/plugins/libjavaplugin.so mozilla-javaplugin.so $lib_path"
     fi
     echo $cmd
-    exec $cmd 
+    # Execute command
+    $cmd
     update-alternatives --set java $extracted_dirname/bin/java
 fi
 
