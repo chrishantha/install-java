@@ -79,18 +79,7 @@ fi
 # Run update-alternatives commands
 if (confirm "Run update-alternatives commands?"); then
     echo "Running update-alternatives..."
-    declare -a commands=($(ls -1 ${java_dist_dir}/bin))
-    for command in "${commands[@]}"; do
-        command_path="$java_dist_dir/bin/$command"
-        if [[ -x $command_path ]]; then
-            update-alternatives --remove "$command" "$command_path"
-        fi
-    done
-
-    lib_path="$java_dist_dir/jre/lib/amd64/libnpjp2.so"
-    if [[ -d "/usr/lib/mozilla/plugins/" ]] && [[ -f $lib_path ]]; then
-        update-alternatives --remove "mozilla-javaplugin.so" "$lib_path"
-    fi
+    update-alternatives --remove java ${java_dist_dir}/bin/java
 fi
 
 if (confirm "Remove directory '$java_dist_dir'?"); then
