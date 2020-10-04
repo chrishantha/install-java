@@ -5,7 +5,7 @@ Java Development Kit (JDK) installation script for Linux
 
 Currently, the `install-java.sh` script supports `tar.gz` distributions from [Oracle](https://www.oracle.com/technetwork/java/index.html), [OpenJDK](http://openjdk.java.net/) and [AdoptOpenJDK](https://adoptopenjdk.net/)
 
-I'm mainly using Ubuntu and therefore this script is tested only on Ubuntu versions.
+I'm mainly using Ubuntu and therefore this script is tested only on different versions of Ubuntu.
 
 ## Prerequisites
 
@@ -17,7 +17,7 @@ The "install-java.sh" script will not download the Java distribution. You must d
 
 For Oracle JDK 7 & 8, `install-java.sh` supports installing demos and "Java Cryptography Extension (JCE) Unlimited Strength Jurisdiction Policy Files". This files are picked up from the same directory.
 
-For example, if you want to install Java 7, following files should be downloaded and moved to a single directory.
+For example, if you want to install Java 7, then the following files should be downloaded and moved to a single directory.
 
  - jdk-7u80-linux-x64.tar.gz
  - jdk-7u80-linux-x64-demos.tar.gz
