@@ -86,12 +86,6 @@ if [[ ${java_dist_filename: -7} != ".tar.gz" ]]; then
     exit 1
 fi
 
-#Check whether unzip command exsits
-if ! command -v unzip >/dev/null 2>&1; then
-    echo "Please install unzip (apt -y install unzip)."
-    exit 1
-fi
-
 # Create the default directory if user has not specified any other path
 if [[ $java_dir == $default_java_dir ]]; then
     mkdir -p $java_dir
@@ -123,8 +117,10 @@ if [[ ! -d $extracted_dirname ]]; then
     tar -xof $java_dist -C $java_dir
     echo "JDK is extracted to $extracted_dirname"
 else
-    echo "WARN: JDK was not extracted to $java_dir. There is an existing directory with name $jdk_dir."
-    exit 1
+    echo "WARN: JDK was not extracted to $java_dir. There is an existing directory with the name \"$jdk_dir\"."
+    if ! (confirm "Do you want to continue?"); then
+        exit 1
+    fi
 fi
 
 if [[ ! -f "${extracted_dirname}/bin/java" ]]; then
@@ -173,6 +169,11 @@ elif [[ $jdk_dir =~ ^jdk1\.8.* ]]; then
 fi
 
 if [[ -f $unlimited_jce_policy_dist ]]; then
+    #Check whether unzip command exsits
+    if ! command -v unzip >/dev/null 2>&1; then
+        echo "Please install unzip (apt -y install unzip)."
+        exit 1
+    fi
     if (confirm "Install Java Cryptography Extension (JCE) Unlimited Strength Jurisdiction Policy Files?"); then
         echo "Extracting policy jars in $unlimited_jce_policy_dist to $extracted_dirname/jre/lib/security"
         unzip -j -o $unlimited_jce_policy_dist *.jar -d $extracted_dirname/jre/lib/security
@@ -210,16 +211,17 @@ if [[ ! -d $java_system_prefs_dir ]]; then
     fi
 fi
 
-if (confirm "Do you want to set JAVA_HOME environment variable in $HOME/.bashrc?"); then
-    if grep -q "export JAVA_HOME=.*" $HOME/.bashrc; then
-        sed -i "s|export JAVA_HOME=.*|export JAVA_HOME=$extracted_dirname|" $HOME/.bashrc
+USER_HOME="$(getent passwd $SUDO_USER | cut -d: -f6)"
+
+if [[ -d "$USER_HOME" ]] && (confirm "Do you want to set JAVA_HOME environment variable in $USER_HOME/.bashrc?"); then
+    if grep -q "export JAVA_HOME=.*" $USER_HOME/.bashrc; then
+        sed -i "s|export JAVA_HOME=.*|export JAVA_HOME=$extracted_dirname|" $USER_HOME/.bashrc
     else
-        echo "export JAVA_HOME=$extracted_dirname" >>$HOME/.bashrc
+        echo "export JAVA_HOME=$extracted_dirname" >>$USER_HOME/.bashrc
     fi
-    source $HOME/.bashrc
 fi
 
-applications_dir="$HOME/.local/share/applications"
+applications_dir="$USER_HOME/.local/share/applications"
 
 create_jmc_shortcut() {
     shortcut_file="$applications_dir/jmc_$jdk_major_version.desktop"
